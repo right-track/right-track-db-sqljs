@@ -1,0 +1,28 @@
+{
+  "name": "right-track-db-sqljs",
+  "version": "1.0.0",
+  "description": "Right Track Database: sqljs",
+  "author": "David Waring <dev@davidwaring.net> (https://davidwaring.net)",
+  "license": "MIT",
+  "main": "src/index.js",
+  "scripts": {
+    "docs": "jsdoc -c jsdoc.json --readme README.md --template $NODE_PATH/@dwaring87/docdash"
+  },
+  "dependencies": {
+    "right-track-agency": "^1.1.0",
+    "right-track-db": "^1.2.0"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.5.5",
+    "@dwaring87/docdash": "^0.4.1"
+  },
+  "homepage": "https://righttrack.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/right-track/right-track-db-sqljs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/right-track/right-track-db-sqljs/issues",
+    "email": "dev@davidwaring.net"
+  }
+}
