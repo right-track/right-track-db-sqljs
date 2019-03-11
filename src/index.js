@@ -1,7 +1,7 @@
 'use strict';
 
 const RightTrackDBTemplate = require('right-track-db');
-const sqlite3 = require('sqlite3');
+const sql = require('sql.js');
 
 /**
  * RightTrackDB Implementation
@@ -19,10 +19,11 @@ class RightTrackDB extends RightTrackDBTemplate {
    * Right Track Database Constructor
    * @constructor
    * @param {RightTrackAgency} agency The Right Track Agency this DB will be used to query
+   * @param {Uint8Array} data A uInt8Array containing the database data
    */
-  constructor(agency) {
+  constructor(agency, data) {
     super(agency);
-    this.db = new sqlite3.Database(this.location);
+    this.db = new sql.Database(data);
   }
 
 
@@ -33,20 +34,32 @@ class RightTrackDB extends RightTrackDBTemplate {
    */
   select(statement, callback) {
     console.log("==> QUERY: [SELECT] " + statement);
-    this.db.all(statement, function(err, rows) {
+    let contents = this.db.exec(statement);
 
-      // SQLite Error
-      if (err) {
-        console.error('ERROR SELECTING RESULTS FROM DB');
-        console.error(statement);
-        console.error(err);
-        return callback(err);
+    // SQLite Error
+    if ( contents === undefined || contents.length !== 1 ) {
+      console.error("ERROR SELECTING RESULTS FROM DB");
+      console.error(statement);
+      return callback(new Error("Could not query database [" + statement + "]"));
+    }
+
+    // Get the columns and set the rows
+    let columns = contents[0].columns;
+    let rows = [];
+
+    // Parse the values
+    for ( let i = 0; i < contents[0].values.length; i++ ) {
+      let values = contents[0].values[i];
+      let row = {};
+      for ( let j = 0; j < values.length; j++ ) {
+        row[columns[j]] = values[j];
       }
+      rows[i] = row;
+    }
 
-      // Return Results
-      return callback(null, rows);
+    // Return the Results
+    return callback(null, rows);
 
-    });
   }
 
   /**
