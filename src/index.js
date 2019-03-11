@@ -34,13 +34,13 @@ class RightTrackDB extends RightTrackDBTemplate {
    */
   select(statement, callback) {
     console.log("==> QUERY: [SELECT] " + statement);
+
+    // Execute the statement
     let contents = this.db.exec(statement);
 
     // SQLite Error
     if ( contents === undefined || contents.length !== 1 ) {
-      console.error("ERROR SELECTING RESULTS FROM DB");
-      console.error(statement);
-      return callback(new Error("Could not query database [" + statement + "]"));
+      return callback(null, []);
     }
 
     // Get the columns and set the rows
@@ -71,20 +71,28 @@ class RightTrackDB extends RightTrackDBTemplate {
    */
   get(statement, callback) {
     console.log("==> QUERY: [GET] " + statement);
-    this.db.get(statement, function(err, row) {
 
-      // SQLite ERROR
-      if (err) {
-        console.error('ERROR SELECTING FIRST RESULT FROM DB');
-        console.error(statement);
-        console.error(err);
-        return callback(err);
-      }
+    // Execute Statement
+    let contents = this.db.exec(statement);
 
-      // Return Result
-      return callback(null, row);
+    // No results returned
+    if ( contents === undefined || contents.length !== 1 || contents[0].values.length < 1 ) {
+      return callback(null, undefined);
+    }
 
-    });
+    // Get the columns and set the row
+    let columns = contents[0].columns;
+    let row = {};
+
+    // Get the first row's properties
+    let values = contents[0].values[0];
+    for ( let j = 0; j < values.length; j++ ) {
+      row[columns[j]] = values[j]
+    }
+
+    // Return the results
+    return callback(null, row);
+
   }
 
 }
