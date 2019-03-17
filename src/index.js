@@ -1,14 +1,15 @@
 'use strict';
 
 const RightTrackDBTemplate = require('right-track-db');
-const sql = require('sql.js');
+const RightTrackAgency = require('right-track-agency');
+
 
 /**
  * RightTrackDB Implementation
  * -------------------------------
  * This Class is an implementation of the abstract `RightTrackDB` Class.
  *
- * This implementation uses the node `sqlite3` module to provide the
+ * This implementation uses the `sql.js` javascript module to provide the
  * actual SQLite functionality.
  *
  * @class
@@ -18,12 +19,12 @@ class RightTrackDB extends RightTrackDBTemplate {
   /**
    * Right Track Database Constructor
    * @constructor
-   * @param {RightTrackAgency} agency The Right Track Agency this DB will be used to query
-   * @param {Uint8Array} data A uInt8Array containing the database data
+   * @param {Object} agencyConfig The configuration of the Right Track Agency
+   * @param {Database} database A sql.js Database object
    */
-  constructor(agency, data) {
-    super(agency);
-    this.db = new sql.Database(data);
+  constructor(agencyConfig, database) {
+    super(new RightTrackAgency(agencyConfig));
+    this.db = database;
   }
 
 
@@ -33,7 +34,6 @@ class RightTrackDB extends RightTrackDBTemplate {
    * @param {function} callback {@link RightTrackDB~selectCallback|selectCallback} callback function
    */
   select(statement, callback) {
-    console.log("==> QUERY: [SELECT] " + statement);
 
     // Execute the statement
     let contents = this.db.exec(statement);
@@ -70,7 +70,6 @@ class RightTrackDB extends RightTrackDBTemplate {
    * @param {function} callback {@link RightTrackDB~getCallback|getCallback} callback function
    */
   get(statement, callback) {
-    console.log("==> QUERY: [GET] " + statement);
 
     // Execute Statement
     let contents = this.db.exec(statement);
