@@ -167,6 +167,7 @@ class RightTrackDB extends RightTrackDBTemplate {
  * Register a callback function and return its ID
  * @param  {Function} callback Callback funtction
  * @return {int}               Callback ID to pass to worker
+ * @private
  */
 function _registerCallback(callback) {
     _SQL_CALLBACK_ID = _SQL_CALLBACK_ID + 1;
@@ -178,6 +179,7 @@ function _registerCallback(callback) {
  * Get the registered callback function
  * @param  {int}      id   Callback function ID
  * @return {Function}      Callback function
+ * @private
  */
 function _getCallback(id) {
     let callback = _SQL_CALLBACKS[id.toString()];
