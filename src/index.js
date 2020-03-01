@@ -49,9 +49,10 @@ class RightTrackDB extends RightTrackDBTemplate {
 
         // Make query
         let rows = DB.exec(statement);
-        let results = rows[0];
-        let columns = results.columns;
-        let values = results.values;
+
+        let results = rows ? rows[0] : undefined;
+        let columns = results ? results.columns : [];
+        let values = results ? results.values : [];
 
         // No results found, return empty array
         if ( !values ) {
@@ -84,9 +85,10 @@ class RightTrackDB extends RightTrackDBTemplate {
 
         // Make query
         let rows = DB.exec(statement);
-        let results = rows[0];
-        let columns = results.columns;
-        let values = results.values;
+
+        let results = rows ? rows[0] : undefined;
+        let columns = results ? results.columns : [];
+        let values = results ? results.values : [];
 
         // No results found, return empty array
         if ( !values || values.length === 0 ) {
