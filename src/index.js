@@ -31,7 +31,7 @@ class RightTrackDB extends RightTrackDBTemplate {
      * @param  {Object}   agencyConfig  The configuration of the Right Track Agency
      * @param  {Array}    array         A Uint8Array containing the database data
      */
-    constructor(agencyConfig, array, callback) {
+    constructor(agencyConfig, array) {
         super(new RightTrackAgency(agencyConfig));
         
         // Register Listeners
