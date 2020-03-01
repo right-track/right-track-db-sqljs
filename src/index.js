@@ -3,12 +3,12 @@
 const RightTrackDBTemplate = require("right-track-db");
 const RightTrackAgency = require("right-track-agency");
 
-// SQL JS CONFIG
-let INIT_SQL_JS = undefined;
-let CONFIG = undefined;
+// SQL JS WORKER
+let worker = undefined;
 
-// SQL JS DATABASE
-let DB = undefined;
+// Registered Callbacks
+let _SQL_CALLBACK_ID = 0;
+let _SQL_CALLBACKS = {};
 
 
 /**
@@ -30,13 +30,19 @@ class RightTrackDB extends RightTrackDBTemplate {
      * @constructor
      * @param  {Object}   agencyConfig  The configuration of the Right Track Agency
      * @param  {Array}    array         A Uint8Array containing the database data
-     * @param  {Function} [callback]    Callback function()
      */
     constructor(agencyConfig, array, callback) {
         super(new RightTrackAgency(agencyConfig));
-        INIT_SQL_JS(CONFIG).then(function(SQL) {
-            DB = new SQL.Database(array);
-            if ( callback ) return callback();
+        
+        // Register Listeners
+        worker.onmessage = this._handleMessage;
+        worker.onerror = this._handleError;
+
+        // Open Database
+        worker.postMessage({
+            id: _registerCallback(),
+            action: 'open',
+            buffer: array
         });
     }
 
@@ -47,30 +53,17 @@ class RightTrackDB extends RightTrackDBTemplate {
      */
     select(statement, callback) {
 
-        // Make query
-        let rows = DB.exec(statement);
+        // Register the callback
+        let id = _registerCallback(function(results) {
+            return callback(null, results);
+        });
 
-        let results = rows ? rows[0] : undefined;
-        let columns = results ? results.columns : [];
-        let values = results ? results.values : [];
-
-        // No results found, return empty array
-        if ( !values ) {
-            return callback(null, []);
-        }
-
-        // Return results of first row
-        else {
-            let rtn = [];
-            for ( let i = 0; i < values.length; i++ ) {
-                let rtn_row = {};
-                for ( let j = 0; j < columns.length; j++ ) {
-                    rtn_row[columns[j]] = values[i][j]
-                }
-                rtn.push(rtn_row);
-            }
-            return callback(null, rtn);
-        }        
+        // Send Query Request
+        worker.postMessage({
+            id: id,
+            action: 'exec',
+            sql: statement
+        }); 
 
     }
 
@@ -83,31 +76,118 @@ class RightTrackDB extends RightTrackDBTemplate {
      */
     get(statement, callback) {
 
-        // Make query
-        let rows = DB.exec(statement);
-
-        let results = rows ? rows[0] : undefined;
-        let columns = results ? results.columns : [];
-        let values = results ? results.values : [];
-
-        // No results found, return empty array
-        if ( !values || values.length === 0 ) {
-            return callback(null, undefined);
-        }
-
-        // Return results of first row
-        else {
-            let rtn = {};
-            let row = values[0];
-            for ( let i = 0; i < columns.length; i++ ) {
-                rtn[columns[i]] = row[i];
+        // Register the callback
+        let id = _registerCallback(function(results) {
+            if ( results ) {
+                if ( results.length === 0 ) {
+                    return callback(null, undefined);
+                }
+                else {
+                    return callback(null, results[0]);
+                }
             }
-            return callback(null, rtn);
-        }       
+            else {
+                return callback(null, undefined);
+            }
+        });
+
+        // Send Query Request
+        worker.postMessage({
+            id: id,
+            action: 'exec',
+            sql: statement
+        }); 
 
     }
 
+
+    /**
+     * SQL Worker Message Handler
+     * - Parse the event results
+     * - Send results to registered callback
+     * @param  {Event} event Message Event
+     * @private
+     */
+    _handleMessage(event) {
+        let id = event.data.id;
+        let callback = _getCallback(id);
+
+        // Return parsed results
+        if ( event.data.results ) {
+            let contents = event.data.results;
+            
+            // SQLite Error
+            if ( contents === undefined || contents.length !== 1 ) {
+                return callback([]);
+            }
+
+            // Get the columns and set the rows
+            let columns = contents[0].columns;
+            let rows = [];
+
+            // Parse the values
+            for ( let i = 0; i < contents[0].values.length; i++ ) {
+                let values = contents[0].values[i];
+                let row = {};
+                for ( let j = 0; j < values.length; j++ ) {
+                    row[columns[j]] = values[j];
+                }
+                rows[i] = row;
+            }
+
+            // Return the Results
+            if ( callback ) {
+                return callback(rows);
+            }
+        }
+
+        // Return raw data
+        else {
+            if ( callback ) {
+                return callback(event.data);
+            }
+        }
+
+    }
+
+
+    /**
+     * SQL Worker Error Handler
+     * @param  {Error} error SQL Worker Error
+     * @private
+     */
+    _handleError(error) {
+        console.error("SQL ERROR: " + error.message);
+    }
+
 }
+
+
+
+/**
+ * Register a callback function and return its ID
+ * @param  {Function} callback Callback funtction
+ * @return {int}               Callback ID to pass to worker
+ * @private
+ */
+function _registerCallback(callback) {
+    _SQL_CALLBACK_ID = _SQL_CALLBACK_ID + 1;
+    _SQL_CALLBACKS[_SQL_CALLBACK_ID.toString()] = callback;
+    return _SQL_CALLBACK_ID;
+}
+
+/**
+ * Get the registered callback function
+ * @param  {int}      id   Callback function ID
+ * @return {Function}      Callback function
+ * @private
+ */
+function _getCallback(id) {
+    let callback = _SQL_CALLBACKS[id.toString()];
+    delete _SQL_CALLBACKS[id.toString()];
+    return callback;
+}
+
 
 
 
@@ -131,12 +211,11 @@ class RightTrackDB extends RightTrackDBTemplate {
 
 
 
-module.exports = function(initSqlJs, config) {
-    if ( !initSqlJs ) {
-        console.log("ERROR: initSqlJs function must be specified");
+module.exports = function(workerLocation) {
+    if ( !workerLocation ) {
+        console.log("ERROR: SQL Worker Location must be specified");
         return undefined;
     }
-    INIT_SQL_JS = initSqlJs;
-    CONFIG = config;
+    worker = new Worker(workerLocation);
     return RightTrackDB;
 }
