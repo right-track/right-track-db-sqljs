@@ -1,7 +1,7 @@
 'use strict';
 
-const RightTrackDBTemplate = require("right-track-db");
-const RightTrackAgency = require("right-track-agency");
+const RightTrackDBTemplate = require('right-track-core/modules/classes/RightTrackDB');
+const RightTrackAgency = require('right-track-core/modules/classes/RightTrackAgency');
 
 // SQL JS WORKER
 let worker = undefined;

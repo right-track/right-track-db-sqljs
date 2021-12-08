@@ -8,10 +8,6 @@
   "scripts": {
     "docs": "jsdoc -c jsdoc.json"
   },
-  "dependencies": {
-    "right-track-agency": "^1.3.0",
-    "right-track-db": "^1.2.5"
-  },
   "devDependencies": {
     "foodoc": "^0.0.9",
     "jsdoc": "^3.5.5"
@@ -24,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/right-track/right-track-db-sqljs/issues",
     "email": "dev@davidwaring.net"
+  },
+  "dependencies": {
+    "right-track-core": "github:right-track/right-track-core"
   }
 }
