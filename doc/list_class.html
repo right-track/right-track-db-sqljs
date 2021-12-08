@@ -1,10 +1,9 @@
-<!-- start:readme.hbs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-		<title>Right Track DB: sql.js</title>
+		<title>Classes</title>
 		<!--[if lt IE 9]>
 		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -86,37 +85,32 @@
 	</header>
 	<!-- end:navbar.hbs -->		<div class="page-header">
 			<div class="container">
-				<span class="kind">readme</span>
-				<h1><span class="name">Right Track DB: sql.js</span></h1>
-				<div class="summary"><p>A Right Track DB implementation using the wasm sql.js module</p></div>			</div>
+				<span class="kind">list</span>
+				<h1><span class="name">Classes</span></h1>
+				<div class="summary"><p>All documented classes.</p></div>			</div>
 		</div>
 	<div class="container content">
 		<div class="row">
 			<div class="col-md-9 main-content">
-		<section class="readme-section">
-			<article><h1>Right Track Database (sql.js)</h1>
-<p><strong>GitHub repo:</strong> <a href="https://github.com/right-track/right-track-db-sqljs">right-track/right-track-db-sqljs</a></p>
-<hr>
-<p>This Node module provides an implementation of the abstract <a href="https://github.com/right-track/right-track-core#right-track-database"><em>RightTrackDB</em></a>
-Class using the <a href="https://github.com/sql-js/sql.js">sql.js</a> module. This
-Class is used to query the SQLite Right Track Database containing the GTFS and
-additional Right Track data.  The SQLite database is generated using the
-<a href="https://github.com/right-track/right-track-db-build">right-track-db-build</a> module.</p>
-<h3>Documentation</h3>
-<p>This module does not directly require the <code>sql.js</code> module.  However, the web-accessible path to the
-Web Worker version of <code>sql.js</code> must be provided to the Right Track Database import statement.</p>
-<pre class="prettyprint source lang-javascript"><code>const RightTrackDB = require(&quot;right-track-db-sqljs&quot;)(&quot;/js/worker.sql.js&quot;);
-</code></pre>
-<p>When creating a new instance of a <code>RightTrackDB</code>, the Right Track Agency configuration and a
-Uint8Array representing the database data must be passed to the constructor.</p>
-<pre class="prettyprint source lang-javascript"><code>let db = new RightTrackDB(agencyConfig, dataArray);
-</code></pre>
-<p>For documentation on this implementation of <code>RightTrackDB</code>, see the <strong>/doc/</strong>
-directory in this repository or online at <a href="https://docs.righttrack.io/right-track-db-sqljs">https://docs.righttrack.io/right-track-db-sqljs</a>.</p>
-<p>For documentation on the abstract <code>RightTrackDB</code> Class, see the source code
-available at <a href="https://github.com/right-track/right-track-core">https://github.com/right-track/right-track-core</a>
-or its documentation at <a href="https://docs.righttrack.io/right-track-core">https://docs.righttrack.io/right-track-core</a>.</p></article>
-		</section>
+						<ol class="breadcrumb">
+							<li><a href="index.html">Home</a></li>
+							<li class="active">Classes</li>
+						</ol>
+					<section>
+		<h2><span class="name">Classes</span></h2>
+		<article class="secondary">
+				<dl class="symbol">
+						
+						<dt class="symbol-title class public">
+			<h4 id="RightTrackDB" class="class public"><a href="RightTrackDB.html"><span class="signature-new">new&nbsp;</span><span class="name">RightTrackDB</span><span class="signature-params">( <span class="signature-param">agencyConfig</span>, <span class="signature-param">array</span>&nbsp;)</span><span class="signature-type"></span></a></h4>
+</dt>
+<dd class="symbol-details class public">
+	<div class="symbol-details-inner">
+	</div>
+</dd>
+				</dl>
+		</article>
+					</section>
 			</div>
 				<div class="col-md-3 side-content">
 					<nav class="toc hidden-print hidden-sm hidden-xs"></nav>
@@ -153,4 +147,3 @@ or its documentation at <a href="https://docs.righttrack.io/right-track-core">ht
 	
 </body>
 </html>
-<!-- end:readme.hbs -->
